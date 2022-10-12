@@ -1,0 +1,17 @@
+Commitment received from Alice: 90e7bc1ce708b0d3368e09d4e64c41a34512250bf15a816a5c5823c228eb6a9b
+Sending dice result to Alice
+Received r and m from Alice.
+Check if Commitment from Alice is equal to Com(aliceR, aliceM): True
+---- Virtual dice is: 1
+
+Commitment received from Alice: fea2b36cb43af3d01dc62d8512925707bf448baf1b87bc8bf68f1a569f699479
+Sending dice result to Alice
+Received r and m from Alice.
+Check if Commitment from Alice is equal to Com(aliceR, aliceM): True
+---- Virtual dice is: 3
+
+Commitment received from Alice: 48f0495a431e404f6d940a97b6aef6a0a8b0037f59be93be2e7d295b8e48d858
+Sending dice result to Alice
+Received r and m from Alice.
+Check if Commitment from Alice is equal to Com(aliceR, aliceM): True
+---- Virtual dice is: 4

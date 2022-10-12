@@ -1,25 +1,69 @@
 import socket
+import time
+import Utility
+from ssl import CERT_REQUIRED, SSLContext, PROTOCOL_TLS_SERVER
 
+# Acts as server for Alice
+def server_program():
+    host = socket.gethostname()
+    port = 5001
 
-def client_program():
-    host = socket.gethostname()  # as both code is running on same pc
-    port = 5000  # socket server port number
+    # Set SSL Context as server. Verify mode is CERT_REQUIRED, which means client must also have cert.
+    context = SSLContext(PROTOCOL_TLS_SERVER)
+    context.verify_mode = CERT_REQUIRED
 
-    client_socket = socket.socket()  # instantiate
-    client_socket.connect((host, port))  # connect to the server
+    # Load Bob cert and key, and store location of Alice cert
+    context.load_cert_chain('bobCert.pem', 'bobKey.pem')
+    context.load_verify_locations("aliceCert.pem")
 
-    message = input(" -> ")  # take input
+    server = socket.socket()
 
-    while message.lower().strip() != 'bye':
-        client_socket.send(message.encode())  # send message
-        data = client_socket.recv(1024).decode()  # receive response
+    server.bind((host, port)) 
+    server.listen()
 
-        print('Received from server: ' + data)  # show in terminal
+    tls = context.wrap_socket(server, server_side=True)
+    conn, address = tls.accept()
 
-        message = input(" -> ")  # again take input
+    print("Connection from: " + str(address))
+    
+    # Establish TSL is configured correctly
+    clientCert = conn.getpeercert()
+    print(f"client have cert: {clientCert != None}")
 
-    client_socket.close()  # close the connection
+    shake = conn.do_handshake()
+    print(f"handshake done: {shake == None}")
+
+    a, b, c = conn.cipher()
+    print(f"TLS cipher: {a, b, c}")
+    
+    print("\n======== PROTOCOL BEGINS ========\n")
+    # Loop awaiting messages from Alice
+    while True:
+        # Receive aliceCom
+        aliceCom = conn.recv(1024).decode()
+        print(f"Commitment received from Alice: {aliceCom}")
+        time.sleep(1)
+
+        # Generate random message and send to Alice
+        bobM = Utility.randDie()
+        print("Sending dice result to Alice")
+        time.sleep(1)
+        conn.send(str(bobM).encode())
+
+        # Receive r and m from Alice, and check if equal to each other.
+        aliceR, aliceM = conn.recv(1024).decode().split(",")
+        aliceTrustworthy = aliceCom == Utility.Com(aliceR, aliceM)
+        print(f"Received r and m from Alice.\nCheck if Commitment from Alice is equal to Com(aliceR, aliceM): {aliceTrustworthy}")
+        time.sleep(1)
+
+        # If alice is trustworthy, calculate virtual dice result
+        if aliceTrustworthy:
+            print(f"---- Virtual dice is: {Utility.dieCalc(aliceM, bobM)}\n")
+        else:
+            print("Cannot roll virtual dice, as Alice is not trustworthy\n")
+
+    conn.close()  # close the connection
 
 
 if __name__ == '__main__':
-    client_program()
+    server_program()

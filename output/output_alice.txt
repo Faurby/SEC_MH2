@@ -1,0 +1,14 @@
+Sending commitment to Bob
+Dice result received from Bob: 6
+Sending r and m to Bob
+---- Virtual dice is: 1
+
+Sending commitment to Bob
+Dice result received from Bob: 3
+Sending r and m to Bob
+---- Virtual dice is: 3
+
+Sending commitment to Bob
+Dice result received from Bob: 2
+Sending r and m to Bob
+---- Virtual dice is: 4
